@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "740465389501",
+    "project_id": "pancake-app-7698a",
+    "storage_bucket": "pancake-app-7698a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740465389501:android:09411104ba8c170d77acd4",
+        "android_client_info": {
+          "package_name": "com.example.pancake_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqjioISAwsotiaxujHf3AeR22U1yW1al8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
