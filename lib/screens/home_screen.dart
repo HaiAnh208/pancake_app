@@ -708,7 +708,7 @@ Widget _buildCategoryList(Color primaryColor) {
           // 🥞 TIÊU ĐỀ GIỮ NGUYÊN
           Expanded(
             child: Text(
-              "Pancake Shop 🥞",
+              "Pancakes Shop 🥞",
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 28,
