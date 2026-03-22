@@ -67,7 +67,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 🛡️ PHÒNG THỦ CHỐNG MÀN HÌNH ĐỎ:
+    // 🛡️ PHÒNG THỦ CHỐNG MÀN HÌNH :
     final dynamic args = ModalRoute.of(context)?.settings.arguments;
 
     if (args == null || args is! Map) {
