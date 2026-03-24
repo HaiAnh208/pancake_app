@@ -99,7 +99,7 @@ String selectedType =
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(
-                    labelText: "Tên bánh ",
+                    labelText: "Tên sản phẩm ",
                   ),
                 ),
                 TextField(
@@ -326,20 +326,28 @@ return Scaffold(
   floatingActionButton: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          // CHỈ HIỆN NÚT NẾU:
-          // 1. Có user đăng nhập (snapshot.hasData)
-          // 2. Email phải đúng là email Admin (Ví dụ: haianh@gmail.com)
-
-          if (snapshot.hasData &&
-              snapshot.data?.email == "email_admin_cua_ban@gmail.com") {
-            return FloatingActionButton(
-              backgroundColor: Colors.pink,
-              onPressed: () => _showAddProductDialog(context),
-              child: const Icon(Icons.add, color: Colors.white),
+          if (snapshot.hasData && snapshot.data != null) {
+            return FutureBuilder<DocumentSnapshot>(
+              // Tìm đúng cái UID của người đang đăng nhập
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(snapshot.data!.uid)
+                  .get(),
+              builder: (context, userSnapshot) {
+                // Kiểm tra: Có data + Document có tồn tại + Role đúng là admin
+                if (userSnapshot.hasData &&
+                    userSnapshot.data!.exists &&
+                    userSnapshot.data!.get('role') == 'admin') {
+                  return FloatingActionButton(
+                    backgroundColor: Colors.pink,
+                    onPressed: () => _showAddProductDialog(context),
+                    child: const Icon(Icons.add, color: Colors.white),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             );
           }
-
-          // Nếu là khách -> Trả về cái hộp rỗng (không có nút để bấm)
           return const SizedBox.shrink();
         },
       ),

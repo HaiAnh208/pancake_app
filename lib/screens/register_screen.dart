@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -17,41 +18,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
 
   void register() async {
+    // 1. Kiểm tra đầu vào
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      _showSnackBar("Please fill in Email and Password");
+      _showSnackBar("Please fill in Email and Password", isError: true);
       return;
     }
     if (passwordController.text != confirmPasswordController.text) {
-      _showSnackBar("Passwords do not match");
+      _showSnackBar("Passwords do not match", isError: true);
       return;
     }
 
     setState(() => isLoading = true);
 
     try {
-      // 1. Tạo tài khoản (Firebase sẽ tự động đăng nhập luôn sau lệnh này)
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      print("🚀 Bắt đầu tạo tài khoản Auth...");
+      // 2. Tạo tài khoản trên Firebase Authentication
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
+
+      print("✅ Đã tạo Auth UID: ${userCredential.user!.uid}");
+
+      // 3. 🔥 TỰ ĐỘNG LƯU VÀO FIRESTORE (Phần quan trọng nhất nè!)
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid) // Dùng UID làm ID của Document luôn
+          .set({
+            'email': emailController.text.trim(),
+            'role': 'user', // Mặc định đăng ký mới là khách (User)
+            'createdAt': DateTime.now(),
+          });
+
+      print("📦 Đã lưu thông tin vào Firestore!");
 
       if (!mounted) return;
 
-      // 2. Thông báo thành công (Tiếng Anh cho đồng bộ nhé)
-      _showSnackBar("🎉 Welcome! Registration successful.", isSuccess: true);
+      _showSnackBar("🎉 Registration successful!", isSuccess: true);
 
-      // 3. 🔥 THAY ĐỔI QUAN TRỌNG: Vào thẳng trang Home
-      // Dùng pushReplacementNamed để khách không bấm Back quay lại trang Register được nữa
+      // 4. Vào thẳng trang Home
       Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       String message = "Registration failed ❌";
       if (e.code == 'email-already-in-use')
         message = "This email is already in use!";
+      if (e.code == 'weak-password') message = "Password is too weak!";
       _showSnackBar(message, isError: true);
     } catch (e) {
+      print("❌ Lỗi không xác định: $e");
       _showSnackBar("Error: ${e.toString()}", isError: true);
+    } finally {
+      if (mounted) setState(() => isLoading = false);
     }
-    if (mounted) setState(() => isLoading = false);
   }
 
   void _showSnackBar(
@@ -67,6 +86,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
             : (isError ? Colors.red : Colors.grey),
       ),
     );
+  }
+  void _registerUser() async {
+    print("1. Bắt đầu chạy hàm Register...");
+
+    // Kiểm tra xem các ô nhập liệu có bị trống không
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      print("2. LỖI: Email hoặc Pass đang trống không!");
+      return;
+    }
+
+    try {
+      print("3. Đang gửi dữ liệu lên Firebase...");
+      // Code Firebase của bạn ở đây...
+    } catch (e) {
+      print("4. CÓ LỖI XẢY RA: $e");
+    }
   }
 
   @override
@@ -100,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 // Bỏ logo hình ảnh, chỉ dùng Icon đơn giản
                 const Text(
-                  "Sign Up",
+                  "Sign Up 🥞",
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,

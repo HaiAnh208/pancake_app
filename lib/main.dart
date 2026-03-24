@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pancake_app/providers/favorite_provider.dart';
 import 'package:pancake_app/screens/favorite_screen.dart';
 import 'package:pancake_app/screens/product_detail_screen.dart';
+import 'package:pancake_app/screens/register_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -80,6 +81,7 @@ class MyApp extends StatelessWidget {
           '/orders': (context) => const OrderHistoryScreen(),
           '/ProductDetail': (context) => const ProductDetailScreen(),
           '/favorites': (context) => const FavoriteScreen(),
+          '/register': (context) => const RegisterScreen(),
         },
       ),
     );
